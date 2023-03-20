@@ -1,55 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:pnemonia/progress.dart';
-import 'package:pnemonia/result.dart';
+import 'package:pnemonia/prediction.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  File? imageFile;
-
-  void _getFromCamera() async {
-    XFile? picked = await ImagePicker()
-        .pickImage(source: ImageSource.camera, maxHeight: 500, maxWidth: 500);
-
-    setState(() {
-      imageFile = File(picked!.path);
-    });
-
-    imageFile != null
-        ? Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => Result(
-                      imageFile: imageFile,
-                    )))
-        : null;
-  }
-
-  void _getFromGallary() async {
-    XFile? picked = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, maxHeight: 500, maxWidth: 500);
-
-    setState(() {
-      imageFile = File(picked!.path);
-    });
-
-    imageFile != null
-        ? Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => Progress(
-                      imageFile: imageFile,
-                    )))
-        : null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,26 +29,14 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(
                 height: 10,
               ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  MaterialButton(
-                    onPressed: () {
-                      _getFromCamera();
-                    },
-                    color: Colors.greenAccent,
-                    child: const Text("Open camera"),
-                  ),
-                  const Expanded(child: Text("")),
-                  MaterialButton(
-                    onPressed: () {
-                      _getFromGallary();
-                    },
-                    color: Colors.amber,
-                    child: const Text("Upload"),
-                  ),
-                ],
-              ),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Prediction()));
+                  },
+                  child: const Text("Goto Prediction"))
             ],
           ),
         ),
