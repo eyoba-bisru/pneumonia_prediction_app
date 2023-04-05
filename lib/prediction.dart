@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:tflite/tflite.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tflite/tflite.dart';
 
 class Prediction extends StatefulWidget {
   const Prediction({super.key});
@@ -12,153 +12,128 @@ class Prediction extends StatefulWidget {
 }
 
 class _PredictionState extends State<Prediction> {
-  // ignore: prefer_typing_uninitialized_variables
-  var _output;
-  // ignore: prefer_typing_uninitialized_variables
-  var _image;
+  File? _image;
+  bool _loading = false;
+  List? _output;
 
   @override
   void initState() {
     super.initState();
+    _loading = true;
     loadModel().then((value) {
-      setState(() {});
+      setState(() {
+        _loading = false;
+      });
     });
-  }
-
-  void _getFromGallary() async {
-    XFile? picked = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, maxHeight: 500, maxWidth: 500);
-
-    setState(() {
-      _image = File(picked!.path);
-    });
-
-    classifyImage(_image);
-  }
-
-  void _getFromCamera() async {
-    XFile? picked = await ImagePicker()
-        .pickImage(source: ImageSource.camera, maxHeight: 500, maxWidth: 500);
-
-    setState(() {
-      _image = File(picked!.path);
-    });
-
-    classifyImage(_image);
-  }
-
-  classifyImage(File image) async {
-    var output = await Tflite.runModelOnImage(
-        path: _image.path,
-        numResults: 2,
-        threshold: 0.5,
-        imageMean: 127.5,
-        imageStd: 127.5);
-
-    setState(() {
-      _output = output;
-    });
-  }
-
-  loadModel() async {
-    await Tflite.loadModel(
-        model: 'assets/model_unquant.tflite', labels: 'assets/labels.txt');
   }
 
   @override
   void dispose() {
-    super.dispose();
     Tflite.close();
+    super.dispose();
+  }
+
+  Future<void> loadModel() async {
+    await Tflite.loadModel(
+      model: 'assets/pnuemonia_lite.tflite',
+      labels: 'assets/labels.txt',
+    );
+  }
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+    setState(() {
+      _loading = true;
+      _image = File(image.path);
+    });
+    classifyImage(_image!);
+  }
+
+  Future<void> takeImage() async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.camera);
+    if (image == null) return;
+    setState(() {
+      _loading = true;
+      _image = File(image.path);
+    });
+    classifyImage(_image!);
+  }
+
+  Future<void> classifyImage(File image) async {
+    final output = await Tflite.runModelOnImage(
+      path: image.path,
+    );
+
+    setState(() {
+      _loading = false;
+      _output = output;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text("Prediction"),
-        centerTitle: true,
-      ),
       body: Center(
-        child: Container(
-          padding: const EdgeInsets.all(25),
-          child: ListView(children: [
-            if (_image != null)
-              Image.file(_image)
-            else
-              Container(
-                height: 300,
-                color: Colors.black26,
-                child: const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(
-                      "You can upload image from gallary \n\nOR \n\nTake a photo using camera",
-                      style: TextStyle(
-                        color: Colors.deepPurpleAccent,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
+        child: SingleChildScrollView(
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width - 50,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _loading
+                    ? const LinearProgressIndicator(
+                        minHeight: 10,
+                      )
+                    : _image == null
+                        ? const Text('No image selected.')
+                        : Container(
+                            width: MediaQuery.of(context).size.width - 50,
+                            height: 300,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: FileImage(
+                                  _image!,
+                                ),
+                              ),
+                            ),
+                          ),
+                const SizedBox(height: 32),
+                _loading
+                    ? const CircularProgressIndicator()
+                    : _output != null
+                        ? Text(
+                            'Output: ${_output![0]['label']}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                            ),
+                          )
+                        : const Text(''),
+                const SizedBox(height: 32),
+                Row(mainAxisSize: MainAxisSize.min, children: [
+                  const Expanded(flex: 1, child: Text('')),
+                  ElevatedButton(
+                    onPressed: () {
+                      takeImage();
+                    },
+                    child: const Icon(Icons.camera),
                   ),
-                ),
-              ),
-            const SizedBox(
-              height: 20,
-            ),
-            Center(
-              child: _output != null
-                  ? Text(
-                      "Prediction: ${_output[0]['label'].toString().substring(2)}",
-                      style: TextStyle(
-                        color: _output != null
-                            ? _output[0]['label'].toString().substring(2) ==
-                                    'Normal'
-                                ? Colors.green
-                                : Colors.red
-                            : Colors.black,
-                        fontSize: 24,
-                      ))
-                  : Container(),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                MaterialButton(
-                  onPressed: () {
-                    _getFromCamera();
-                  },
-                  color: Colors.greenAccent,
-                  child: const Text("Open camera"),
-                ),
-                const Expanded(child: Text("")),
-                MaterialButton(
-                  onPressed: () {
-                    _getFromGallary();
-                  },
-                  color: Colors.amber,
-                  child: const Text("Upload"),
-                ),
+                  const Expanded(flex: 2, child: Text('')),
+                  ElevatedButton(
+                    onPressed: () {
+                      pickImage();
+                    },
+                    child: const Icon(Icons.image),
+                  ),
+                  const Expanded(flex: 1, child: Text('')),
+                ]),
               ],
             ),
-            MaterialButton(
-              onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/', (Route<dynamic> route) => false);
-              },
-              color: Colors.deepPurple,
-              child: const Text(
-                "Back to home",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            )
-          ]),
+          ),
         ),
       ),
     );

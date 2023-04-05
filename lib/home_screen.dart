@@ -7,27 +7,34 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text("Pneumonia prediction"),
-        centerTitle: true,
-      ),
       body: Center(
         child: SizedBox(
           width: MediaQuery.of(context).size.width - 50,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(
-                'assets/images/radiograph.png',
+              Container(
+                width: MediaQuery.of(context).size.width - 50,
+                height: 300,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  image: const DecorationImage(
+                    fit: BoxFit.cover,
+                    image: AssetImage(
+                      'assets/images/radiograph.png',
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(
-                height: 50,
+                height: 30,
               ),
               const Text(
-                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type spec"),
+                textAlign: TextAlign.center,
+                "lorem epsum dolor etos sjflsd lkdfjlskfjsfsflsj fls flsjflsdjflsdjfls fl dfl] flkjdlfjdslfj lf sdlfjsljf dlf sld flsdjf alfl saf a fl sdlfjslfdslflsfl sl dlflsdjfls fl lsk lkfj slfjlj dflsdlf sdl sd fsdl lsd flsd fllj lsfl flsdlflsd flslsj djslfjs fl sdfljsd lfjsdl.jdslkjfslfjsl fsld fjsdl fjsdlf sldf jld.",
+              ),
               const SizedBox(
-                height: 10,
+                height: 30,
               ),
               ElevatedButton(
                   onPressed: () {
@@ -36,7 +43,21 @@ class HomeScreen extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (context) => const Prediction()));
                   },
-                  child: const Text("Goto Prediction"))
+                  child: Container(
+                    height: 45,
+                    width: MediaQuery.of(context).size.width,
+                    child: Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            "Get Started",
+                          ),
+                          Icon(Icons.chevron_right_outlined)
+                        ],
+                      ),
+                    ),
+                  ))
             ],
           ),
         ),

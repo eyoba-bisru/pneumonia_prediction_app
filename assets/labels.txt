@@ -1,2 +1,3 @@
-0 Pneumonia
-1 Normal
+neither
+normal
+pneumonia
