@@ -31,7 +31,7 @@ class HomeScreen extends StatelessWidget {
               ),
               const Text(
                 textAlign: TextAlign.center,
-                "lorem epsum dolor etos sjflsd lkdfjlskfjsfsflsj fls flsjflsdjflsdjfls fl dfl] flkjdlfjdslfj lf sdlfjsljf dlf sld flsdjf alfl saf a fl sdlfjslfdslflsfl sl dlflsdjfls fl lsk lkfj slfjlj dflsdlf sdl sd fsdl lsd flsd fllj lsfl flsdlflsd flslsj djslfjs fl sdfljsd lfjsdl.jdslkjfslfjsl fsld fjsdl fjsdlf sldf jld.",
+                "This is the mobile application for predicting pneumonia from Chest X-rays using Machine learning. \nTo go to prediction click get started.",
               ),
               const SizedBox(
                 height: 30,

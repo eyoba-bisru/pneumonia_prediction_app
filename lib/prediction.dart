@@ -107,10 +107,9 @@ class _PredictionState extends State<Prediction> {
                     ? const CircularProgressIndicator()
                     : _output != null
                         ? Text(
-                            'Output: ${_output![0]['label']}',
+                            '${_output![0]['label']}',
                             style: const TextStyle(
-                              fontSize: 18,
-                            ),
+                                fontSize: 18, color: Colors.indigo),
                           )
                         : const Text(''),
                 const SizedBox(height: 32),
