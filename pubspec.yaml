@@ -16,6 +16,7 @@ dependencies:
   flutter_native_splash: ^2.2.19
   image_picker: ^0.8.7
   tflite: ^1.1.2
+  dcdg: ^4.1.0
 
 flutter_native_splash:
   color: "#ffffff"
