@@ -43,14 +43,14 @@ class HomeScreen extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (context) => const Prediction()));
                   },
-                  child: Container(
+                  child: SizedBox(
                     height: 45,
                     width: MediaQuery.of(context).size.width,
                     child: Center(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text(
+                        children: const [
+                          Text(
                             "Get Started",
                           ),
                           Icon(Icons.chevron_right_outlined)
